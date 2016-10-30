@@ -1,2 +1,2 @@
-# vserv
-Magnetic Stripe Quality COntrol Prokect
+# VSERV 
+Magnetic Stripe Quality Control Project 2016
