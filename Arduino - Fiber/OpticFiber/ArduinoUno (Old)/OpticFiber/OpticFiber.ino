@@ -2,7 +2,7 @@
 //Essentials
 byte clk = B000;
 const int numFibersPerRow = 2;
-const int stripes = 3;
+const int stripes = 2;
 int dark[numFibersPerRow], light[numFibersPerRow];
 
 //SpeedTest
@@ -31,7 +31,7 @@ void loop() {
       speedFlag = !speedFlag;
     }
     else{
-      delay(500);
+      //delay(500);
       time1 = millis();
 //      Serial.print("Program speed: ");
 //      Serial.println(time1 - time0);
@@ -57,7 +57,7 @@ void loop() {
   //Read from the phototransistors
   for(int i = 0; i < numFibersPerRow; i++){
     dark[i] = analogRead(i);
-    light[i] = analogRead(i + 8); 
+    light[i] = analogRead(i + 2); 
 
     //Print Dark
     darkPrint += dark[i];
