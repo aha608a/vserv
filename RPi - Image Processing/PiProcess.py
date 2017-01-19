@@ -1,6 +1,7 @@
 # import the necessary packages
 from picamera import PiCamera
 from picamera.array import PiRGBArray
+from PiVideoStream import PiVideoStream
 import numpy as np
 import time
 import cv2
@@ -22,25 +23,24 @@ def auto_canny(image, Canny_sigma, GaussBlur_Kernel, GaussBlur_Stdev):
     # return the edged image
     return edged
 
+cv2.namedWindow("Image", cv2.WINDOW_AUTOSIZE)
+
 #Create trackbar
 cv2.createTrackbar("Auto Canny Sigma", "Image", 33, 100, nothing)
 cv2.createTrackbar("Gauss Blur Kernel", "Image", 3, 100, nothing)
 cv2.createTrackbar("Gauss Blur X Stdev", "Image", 0, 100, nothing)
 
 #Initialize PiCamera
-cam = PiCamera()
-cam.resolution = (1920, 1080)
-cam.framerate = 32
-rawCap = PiRGBArray(cam, (1920, 1080))
-
-cv2.namedWindow("Image", cv2.WINDOW_NORMAL)
+cam = PiVideoStream().start()
 
 #Warm up camera
-time.sleep(0.1)
+time.sleep(1)
 
-for frame in cam.capture_continuous(rawCap, format = "bgr", use_video_port = True):
+pause = False
+while(1):
     #Grab frame
-    image = frame.array
+    if(not pause):
+        image = cam.read()
 
     #Update our parameters
     trackBarCanny_sigma = cv2.getTrackbarPos("Auto Canny Sigma", "Image")
@@ -52,8 +52,16 @@ for frame in cam.capture_continuous(rawCap, format = "bgr", use_video_port = Tru
     if(k == 27):
         break
 
+    elif(k == 32 and (not pause)):
+        pause = True
+
+    elif(k == 32 and pause):
+        pause = False
+
     if (trackBarGaussBlur_Kernel != 0):
         #Process our image
-        cv2.imshow("Image", auto_canny(image, trackBarCanny_sigma / 100, trackBarGaussBlur_Kernel * (2) - 1,
+        cv2.imshow("Image", auto_canny(image, trackBarCanny_sigma / 100, trackBarGaussBlur_Kernel * 2 - 1,
                                        trackBarGaussBlur_Stdev / 100))
 
+cam.stop()
+cv2.destroyAllWindows()
